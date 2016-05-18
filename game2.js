@@ -46,8 +46,7 @@ function indexOf(arr, n) {
 	return -1;
 }
 
-/* Checks if a move if legal - returns true if it is, else false if placing n in
-row r, column c or square s is illegal */
+/* Checks if a move if legal - returns true if it is, else false if placing n in row r, column c or square s is illegal */
 function check_move(r, c, s, n, rows, cols, squares) {
 	if (indexOf(rows[r], n) === -1) {
 		return false;
