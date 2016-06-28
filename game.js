@@ -1,182 +1,170 @@
-"use strict";
+var Board = function(x, y) {
+  this.x = x;
+  this.y = y;
+  this.dim = 0;
+  this.size = 0;
+  this.rows = [];
+  this.cols = [];
+  this.squares = [];
+};
 
-function get_rand_num(max) {
-    return Math.floor(Math.random() * max);
+Board.prototype.setDimAndSize = function() {
+	this.dim = this.x * this.y;
+	this.size = this.dim * this.dim;
 }
 
-function check_num(num, array) {
-    var check = -1;
-    for (var i = 0; i < array.length; i += 1) {
-        if (array[i] === num) {
-            check = i;
-        }
-    }
-    return check;
-}
+Board.prototype.findSquare = function(row, col) {
+	return Math.floor(row / this.x) * this.x + Math.floor(col / this.y);
+};
 
-function create_ordered_array(n) {
+Board.prototype.findSquareCell = function(row, col) {
+	var r = this.findSquare(row, col) % this.x;
+	var c = this.findSquare(row, col) % this.y;
+	return (r * this.x) + c;
+};
+
+Board.prototype.randNum = function(n) {
+	return Math.floor(Math.random() * n);
+};
+
+Board.prototype.createOrdArray = function() {
 	var arr = [];
-	for (var i = 0; i < n; i += 1) {
+	for (var i = 0; i < this.dim; i+= 1) {
 		arr[i] = i+1;
 	}
-	return arr;	
-}
-
-function create_rand_array(n, arr) {
-	for (var i = 0; i < (Math.floor(n/2)+1); i += 1) {
-		var a = get_rand_num(n);
-		var b = get_rand_num(n);
-		var temp = arr[a];
-		arr[a] = arr[b];
-		arr[b] = temp;
-	}
 	return arr;
-}
+};
 
-
-
-function choose_numbers(size) {
-	for (var trials = 0; trials < 1; trials += 1) {
-		// Create basic array of numbers 1 to n
-		var ord_arr = create_ordered_array(size);
-		// Create n arrays of randomly ordered array of numbers 1 to n
-		var rand_arr = create_rand_array(size, ord_arr);
-		console.log(rand_arr);
-		
-		var rows = [];
-		var cols = [];
-		var squares = [];
-		var board = [];
-		for (var i = 0; i < size; i += 1) {
-			rows[i] = [];
-			cols[i] = [];
-			squares[i] = [];
-			board[i] = [];
-			for (var j = 0; j < size; j += 1) {
-				rows[i][j] = j+1;
-				cols[i][j] = j+1;
-				squares[i][j] = j+1;
-				board[i][j] = 0;
-			}
-		}
-		
-		for (var r = 0; r < size; r += 1) {
-			for (var c = 0; c < size; c += 1) {
-				var n = Math.sqrt(size);
-				var s = Math.floor(r / n) * n + Math.floor(c / n);
-				console.log(r, c, s, ': ');
-				
-				//console.log(rows[r].length, cols[c].length, rows[r]);
-				var cell_comp = false;
-				for (var i = 0; i < size; i += 1) {
-					//console.log(i);
-					var check_r_idx = check_num(rand_arr[i], rows[r]);
-					var check_c_idx = check_num(rand_arr[i], cols[c]);
-					var check_s_idx = check_num(rand_arr[i], squares[s]);
-					if (check_r_idx !== -1 && check_c_idx !== -1 && check_s_idx !== -1) {
-						console.log(rand_arr[i]);
-						console.log(rows[r]);
-						console.log(cols[c]);
-						console.log(squares[s]);
-						board[r][c] = rand_arr[i];
-						rows[r].splice(check_r_idx, 1);
-						cols[c].splice(check_c_idx, 1);
-						squares[s].splice(check_s_idx, 1);
-						console.log(rows[r]);
-						console.log(cols[c]);
-						console.log(squares[s]);
-						cell_comp = true;
-						break;
-					}
-				}
-				if (cell_comp === false) {
-					console.log('error ', r, c);
-				}
-				
-			}
-		}
-		
-		// Second pass
-		var count = 0;
-		for (var r = 0; r < size; r += 1) {
-			for (var c = 0; c < size; c += 1) {
-				if (board[r][c] === 0) {
-					var cell_comp = false;
-					for (var i = 0; i < size; i += 1) {
-					//console.log(i);
-						var check_r_idx = check_num(rand_arr[i], rows[r]);
-						var check_c_idx = check_num(rand_arr[i], cols[c]);
-						var check_s_idx = check_num(rand_arr[i], squares[s]);
-						if (check_r_idx !== -1 && check_c_idx !== -1 && check_s_idx !== -1) {
-							console.log(rand_arr[i]);
-							console.log(rows[r]);
-							console.log(cols[c]);
-							console.log(squares[s]);
-							board[r][c] = rand_arr[i];
-							rows[r].splice(check_r_idx, 1);
-							cols[c].splice(check_c_idx, 1);
-							squares[s].splice(check_s_idx, 1);
-							console.log(rows[r]);
-							console.log(cols[c]);
-							console.log(squares[s]);
-							break;
-						}
-					}
-					if (cell_comp === false) {
-						count += 1;
-						console.log('error ', r, c);
-					}
-				
-				}
-			}
-		}
-		console.log(count);
-		return board;
-		
+Board.prototype.createRandArray = function() {
+	var ordArr = this.createOrdArray(this.dim);
+	var randArr = [];
+	for (var i = 0; i < this.dim; i++) {
+		var idx = this.randNum(ordArr.length);
+		randArr[i] = ordArr[idx];
+		ordArr.splice(idx, 1);
 	}
-	console.log('fin');
-    return board;
-}
+	return randArr;
+};
 
-function create_board(mode) {
-    var board = document.getElementById("board");
-    var size = mode * mode;
-    var num_cells = size * size;
+Board.prototype.createRandBoard = function() {
+	var tempBoard = [];
+	for (var i = 0; i < this.dim; i++) {
+		tempBoard[i] = this.createRandArray();
+	}
+	return tempBoard;
+};
 
-    var rows = [];
-    var cells = [];
+Board.prototype.setRandBoard = function() {
+	this.rows = this.createRandBoard();
+	this.cols = this.createRandBoard();
+	this.squares = this.createRandBoard();
+};
 
-    var nums = choose_numbers(size);
-	
-    if (nums != 0) {
-		for (var r = 0; r < size; r += 1) {
-			rows[r] = board.insertRow(r);
+Board.prototype.setZeroBoard = function() {
+	for (var i = 0; i < this.dim; i++) {
+		this.rows[i] = [];
+		this.cols[i] = [];
+		this.squares[i] = [];
+		for (var j = 0; j < this.dim; j++) {
+			this.rows[i][j] = 0;
+			this.cols[i][j] = 0;
+			this.squares[i][j] = 0;
+		}
+	}
+};
 
-			for (var c = 0; c < size; c += 1) {
-				var cell = r * size + c;
-				cells[cell] = rows[r].insertCell(c);
-				cells[cell].innerHTML = parseInt(nums[r][c], 10);
-
-				if (c % mode == 0) {
-					cells[cell].style = "border-left: 2px solid #999;";
-				}
-			}
-
-			if (r % mode == 0) {
-				rows[r].style = "border-top: 2px solid #999;";
+Board.prototype.checkForZeros = function() {
+	var count = 0;
+	for (var row=0; row < this.dim; row++) {
+		for (var col=0; col < this.dim; col++) {
+			if (this.rows[row][col] == 0) {
+				count++;
 			}
 		}
-    }
+	}
+	return count;	
+};
+
+Board.prototype.checkMove = function(row, col, num, possBoard) {
+	console.log("CM: " + " " + row + " " + col + " " + num);
+	console.log(possBoard.cols[col]);
+	console.log(possBoard.squares[possBoard.findSquare(row, col)]);
+	if ((possBoard.cols[col].indexOf(num) == -1 ) || (possBoard.squares[possBoard.findSquare(row, col)].indexOf(num) == -1 )) {
+		console.log("false");
+		return false;
+	}
+	console.log("true");
+	return true;
+};
+
+Board.prototype.removeFromPossBoard = function(row, col, num) {
+	var rowsIdx = this.rows[row].indexOf(num);
+	this.rows[row].splice(rowsIdx, 1);
+	
+	var colsIdx = this.cols[col].indexOf(num);
+	this.cols[col].splice(colsIdx, 1);
+	
+	var squareIdx = this.findSquare(row, col);
+	this.squares[squareIdx].splice(this.squares[squareIdx].indexOf(num), 1);
+};
+
+Board.prototype.addToGameBoard = function(row, col, num) {
+	console.log("ATGB: " + row + " " + col + " " + num);
+	this.rows[row][col] = num;
+	this.cols[col][row] = num;
+	this.squares[this.findSquare(row, col)][this.findSquareCell(row, col)] = num;
+	console.log("ROW: " + row + " " + this.rows[row]);
+};
+
+Board.prototype.toString = function() {
+	var data = "";
+	for (var i = 0; i < this.dim; i++) {
+		data = data + this.rows[i].toString() + "\n";
+	}
+	return data;
+};
+
+Board.prototype.setRow = function(row, possBoard) {
+	var possRow = possBoard.rows[row];
+	var tempRow = this.rows[row];
+	for (var c = 0; c < this.dim; c++) {
+		for (var idx = 0; idx < possRow.length; idx++) {
+			if (this.checkMove(row, c, possRow[idx], possBoard) == true) {
+				this.addToGameBoard(row, c, possRow[idx]);
+				possBoard.removeFromPossBoard(row, c, possRow[idx]);
+				break;
+			}
+		}
+	}
 }
 
-function board_2() {
-    create_board(2);
-}
-
-function board_3() {
-    create_board(3);
-}
-
-function board_4() {
-    create_board(4);
+function startGame(x, y) {
+	var trials = 1;
+	for (var t = 0; t < trials; t++) {
+		// Set up boards
+		var possBoard = new Board(x, y);
+		possBoard.setDimAndSize();
+		possBoard.setRandBoard();
+		
+		var gameBoard = new Board(x, y);
+		gameBoard.setDimAndSize();
+		gameBoard.setZeroBoard();
+		
+		// Assign values to game board cells
+		for (var r = 0; r < gameBoard.dim; r++) {
+			gameBoard[r] = gameBoard.setRow(r, possBoard);
+		}
+		
+		// Print board for debugging
+		var zeros = gameBoard.checkForZeros();
+		console.log(gameBoard.toString());
+		console.log(zeros);
+		if (zeros == 0) {
+			console.log(gameBoard.toString());
+			console.log(t);		
+			// PUT DISPLAY FUNCTION HERE
+			break;
+		}
+	}	
+	
 }
