@@ -2,18 +2,45 @@
 <html>
 	<head>
 		<title>Sudoku</title>
+		<link rel="stylesheet" type="text/css" href="reset.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 		
 	<body>	
-		<form>
-			<input type="button" class="size_btn" id="2" value="2x2" onclick="return startGame(2, 2)">
-			<input type="button" class="size_btn" id="3" value="3x3" onclick="return startGame(3, 3)">
-			<input type="button" class="size_btn" id="4" value="2x3" onclick="return startGame(2, 3)">
-		</form>
+		<header>
+			<h1>Variable Sudoku</h1>
+			<p id="subtitle">A Sudoku game that lets you choose the board's dimenions!</p>
+		</header>
 		
-		<table id="board"> </table>
+		<div id="dims">
+			<p id="sizeQ">What size board do you want?</p>
+			<input type="button" class="size_btn" id="2x2" value="2x2" onclick="return startGame(2, 2)">
+			<input type="button" class="size_btn" id="2x3" value="2x3" onclick="return startGame(2, 3)">
+			<input type="button" class="size_btn" id="3x2" value="3x2" onclick="return startGame(3, 2)">
+			<input type="button" class="size_btn" id="3x3" value="3x3" onclick="return startGame(3, 3)">
+		</div>
+		
+		<div id="game">
+			<div id="board">
+				<table id="sudokuBoard"> </table>
+			</div>
+			
+			<div id="options">
+				<input type="button" class="val_btn" id="1" value="1" onclick="return updateVal(1)">
+				<input type="button" class="val_btn" id="2" value="2" onclick="return updateVal(2)">
+				<input type="button" class="val_btn" id="3" value="3" onclick="return updateVal(3)">
+				<br />
+				<input type="button" class="val_btn" id="4" value="4" onclick="return updateVal(4)">
+				<input type="button" class="val_btn" id="5" value="5" onclick="return updateVal(5)">
+				<input type="button" class="val_btn" id="6" value="6" onclick="return updateVal(6)">
+				<br />
+				<input type="button" class="val_btn" id="7" value="7" onclick="return updateVal(7)">
+				<input type="button" class="val_btn" id="8" value="8" onclick="return updateVal(8)">
+				<input type="button" class="val_btn" id="9" value="9" onclick="return updateVal(9)">
+			</div>
+		</div>
 	
-		<script type="text/javascript" src="game2.js" ></script>
+		<script type="text/javascript" src="game7.js" ></script>
 	
 	</body>
 </html>

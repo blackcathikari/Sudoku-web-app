@@ -121,7 +121,6 @@ Board.prototype.toString = function() {
 
 Board.prototype.setRow = function(row) {
 	var possRow = this.rows[row];
-	var tempRow = this.board[row];
 	for (var c = 0; c < this.dim; c++) {
 		for (var idx = 0; idx < possRow.length; idx++) {
 			if (this.checkMove(row, c, possRow[idx]) == true) {
@@ -131,7 +130,19 @@ Board.prototype.setRow = function(row) {
 			}
 		}
 	}
-}
+};
+
+Board.prototype.checkRowForZeros = function(row) {
+	//console.log("CRFZ " + this.board[row]);
+	for (var c = 0; c < this.dim; c++) {
+		if (this.board[row][c] == 0) {
+			//console.log("CRFZ true");
+			return true;
+		}
+	}
+	//console.log("CRFZ false");
+	return false;
+};
 
 // -------------------------- REDO ROWS -----------------------------------
 
@@ -156,9 +167,8 @@ function redoRows(origBoard, row) {
 // ------------------------ BASE FUNCTION ---------------------------------
 
 function startGame(x, y) {
-	var trials = 30;
+	var trials = 200;
 	for (var t = 0; t < trials; t++) {
-		console.log("------------------------------------------------");
 		// Set up boards
 		var gameBoard = new Board(x, y);
 		gameBoard.setDimAndSize();
@@ -168,45 +178,27 @@ function startGame(x, y) {
 		// Assign values to game board cells
 		for (var r = 0; r < gameBoard.dim; r++) {
 			gameBoard.setRow(r);
+			
+			if(gameBoard.checkRowForZeros(r) == true) {
+				var newBoard = redoRows(gameBoard, r);
+						
+				// Assign values to game board cells
+				newBoard.setRow(r);
+				gameBoard = newBoard;
+				newBoard = null;
+			}
 		}
 		
 		// Print board for debugging
 		var zeros = gameBoard.checkForZeros();
-		//console.log(gameBoard.toString());
-		//console.log(zeros);
 		if (zeros == 0) {
-			console.log("DONE:");
+			console.log("DONE, t: " + t);
 			console.log(gameBoard.toString());
 			
 			// PUT DISPLAY FUNCTION HERE
 			break;
-		} else if (x > 2 && y > 2) {
-			console.log("NEW BOARD");
-			var zeroRow = gameBoard.findZero();
-			console.log("ZR: " + zeroRow);
-			if (zeroRow > -1) {
-				var newBoard = redoRows(gameBoard, zeroRow);
-				
-				// Assign values to game board cells
-				for (var r = zeroRow; r < gameBoard.dim; r++) {
-					newBoard.setRow(r);
-				}
-				
-				// Print board for debugging
-				var zeros = newBoard.checkForZeros();
-				console.log("Updated board:");
-				console.log(newBoard.toString());
-				console.log(zeros);
-				if (zeros == 0) {
-					console.log(newBoard.toString());
-					
-					// PUT DISPLAY FUNCTION HERE
-					break;
-				}
-			}
-		}
-		console.log(t);	
-		
-	}	
+		} 
+	}
+		console.log("Finished.");
 	
 }
